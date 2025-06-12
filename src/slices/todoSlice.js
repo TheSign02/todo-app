@@ -6,7 +6,7 @@ const todoSlice = createSlice({
   initialState: [],
   reducers: {
     addTodo: (state, action) => {
-      state.push({ id: uuidv7(), text: action.payload, status: "pending" }); // status can be: "pending", "completed" and "failed"
+      state.push({ id: uuidv7(), text: action.payload.text, priority: action.payload.priority, status: "pending" }); // status can be: "pending", "completed" and "failed"
     },
     deleteTodo: (state, action) => {
       return state.filter((todo) => todo.id !== action.payload);
