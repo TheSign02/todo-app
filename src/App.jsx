@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addTodo, deleteTodo } from "./slices/todoSlice";
-import TrashCan from "./components/TrashCan";
+import { addTodo, deleteTodo, changeTodoStatus } from "./slices/todoSlice";
 import NavBar from "./components/NavBar";
+import Task from "./components/Task";
 
 const App = () => {
   const [text, setText] = useState("");
@@ -24,9 +24,9 @@ const App = () => {
     }
   }
 
-  function handleCompletion(id) {
+  function handleChangeTodoStatus(id) {
     if (id) {
-      dispatch(completeTodo(id));
+      dispatch(changeTodoStatus(id));
     }
   }
 
@@ -38,7 +38,7 @@ const App = () => {
 
   return (
     <div
-      className={`min-h-screen  ${
+      className={`min-h-screen overflow-x-hidden  ${
         currentTheme === "light"
           ? "bg-[#e4d1c6] text-black"
           : "bg-[#221e30] text-white"
@@ -47,7 +47,7 @@ const App = () => {
       <nav className="sticky top-0 z-50">
         <NavBar />
       </nav>
-      <main className="flex flex-col items-center justify-center">
+      <main className="flex flex-col items-center">
         <h1 className="text-3xl font-bold m-5">Todo App</h1>
         <form onSubmit={handleSubmit} className="mb-10">
           <input
@@ -55,35 +55,27 @@ const App = () => {
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Enter a todo"
-            className={`border-1 rounded-l-[8px] rounded-r-[8px] p-2 mr-2 ${currentTheme === "light" ? "placeholder-[#808080]" : "placeholder-[#a7a7a7]"} `}
+            className={`border-1 rounded-l-[8px] rounded-r-[8px] p-2 mr-2 ${
+              currentTheme === "light"
+                ? "placeholder-[#808080]"
+                : "placeholder-[#a7a7a7]"
+            } `}
           />
-          <button className={`${buttonClasses}`} type="submit">Add Todo</button>
+          <button className={`${buttonClasses}`} type="submit">
+            Add Todo
+          </button>
         </form>
-        <ul className="flex flex-col items-center w-75/100">
+        <ul className="flex flex-col items-center w-3/4">
           {todos.map((todo) => {
             return (
-              <li
+              <Task
                 key={todo.id}
-                className={`flex flex-row items-center justify-between w-full px-4 py-2 ${
-                  todo.completed ? "line-through" : ""
-                }`}
-              >
-                <span className="truncate">{todo.text}</span>
-                <span className="flex flex-row items-center gap-1">
-                  <button
-                    onClick={() => handleCompletion(todo.id)}
-                    className={`hover:text-green-500 ${buttonClasses}`}
-                  >
-                    Done
-                  </button>
-                  <button
-                    onClick={() => handleDeleteTodo(todo.id)}
-                    className={`hover:text-red-500 ${buttonClasses}`}
-                  >
-                    {<TrashCan />}
-                  </button>
-                </span>
-              </li>
+                todo={todo}
+                onChangeTodo={handleChangeTodoStatus}
+                onDelete={handleDeleteTodo}
+                buttonClasses={buttonClasses}
+                currentTheme={currentTheme}
+              />
             );
           })}
         </ul>

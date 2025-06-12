@@ -1,4 +1,4 @@
-const TrashCan = () => {
+const TrashCanIcon = () => {
   return (
     <svg
       width="24"
@@ -20,4 +20,4 @@ const TrashCan = () => {
   );
 }
 
-export default TrashCan;
+export default TrashCanIcon;
