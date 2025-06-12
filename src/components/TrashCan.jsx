@@ -1,4 +1,4 @@
-function TrashCan() {
+const TrashCan = () => {
   return (
     <svg
       width="24"
