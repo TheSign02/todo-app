@@ -1,8 +1,14 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addTodo, deleteTodo, changeTodoStatus } from "./slices/todoSlice";
+import {
+  addTodo,
+  deleteTodo,
+  changeTodoStatus,
+  reorderTodos,
+} from "./slices/todoSlice";
 import NavBar from "./components/NavBar";
 import Task from "./components/Task";
+import { AnimatePresence, Reorder } from "motion/react";
 
 const App = () => {
   const [text, setText] = useState("");
@@ -15,7 +21,7 @@ const App = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (text) {
-      dispatch(addTodo({text, priority}));
+      dispatch(addTodo({ text, priority }));
       setText("");
       setPriority(0);
     }
@@ -27,26 +33,31 @@ const App = () => {
     if (id) {
       dispatch(deleteTodo(id));
     }
-  }
+  };
 
   // Handle Changing the Status of the Todo
   const handleChangeTodoStatus = (id) => {
     if (id) {
       dispatch(changeTodoStatus(id));
     }
-  }
+  };
 
+  // Handle Change Priority
   const handleIncrementPriority = () => {
-    if(priority < 5){
+    if (priority < 5) {
       setPriority(priority + 1);
     }
-  }
-
+  };
   const handleDecrementPriority = () => {
-    if(priority > 0){
+    if (priority > 0) {
       setPriority(priority - 1);
     }
-  }
+  };
+
+  // Handle Todos Reordering
+  const handleReorder = (newOrder) => {
+    dispatch(reorderTodos(newOrder));
+  };
 
   // Theme Styling for Buttons
   const buttonClasses =
@@ -85,9 +96,21 @@ const App = () => {
           />
           {/* Change Priority of Todo */}
           <div className="flex gap-2 items-center">
-            <button type="button" className={`${buttonClasses} w-9 h-9 flex items-center justify-center`} onClick={() => handleDecrementPriority()}>-</button>
+            <button
+              type="button"
+              className={`${buttonClasses} w-9 h-9 flex items-center justify-center`}
+              onClick={() => handleDecrementPriority()}
+            >
+              -
+            </button>
             <p>{priority}</p>
-            <button type="button" className={`${buttonClasses} w-9 h-9 flex items-center justify-center`} onClick={() => handleIncrementPriority()}>+</button>
+            <button
+              type="button"
+              className={`${buttonClasses} w-9 h-9 flex items-center justify-center`}
+              onClick={() => handleIncrementPriority()}
+            >
+              +
+            </button>
           </div>
           <button className={`${buttonClasses}`} type="submit">
             Add Todo
@@ -95,20 +118,33 @@ const App = () => {
         </form>
 
         {/* Display The Tasks */}
-        <ul className="flex flex-col items-center w-3/4">
-          {todos.map((todo) => {
-            return (
-              <Task
-                key={todo.id}
-                todo={todo}
-                onChangeTodo={handleChangeTodoStatus}
-                onDelete={handleDeleteTodo}
-                buttonClasses={buttonClasses}
-                currentTheme={currentTheme}
-              />
-            );
-          })}
-        </ul>
+        <Reorder.Group
+          className="flex flex-col items-center w-3/4"
+          values={todos}
+          onReorder={handleReorder}
+        >
+          <AnimatePresence>
+            {todos.map((todo) => {
+              return (
+                <Reorder.Item
+                  key={todo.id}
+                  value={todo}
+                  className="flex w-full"
+                  layout
+                >
+                  <Task
+                    key={todo.id}
+                    todo={todo}
+                    onChangeTodo={handleChangeTodoStatus}
+                    onDelete={handleDeleteTodo}
+                    buttonClasses={buttonClasses}
+                    currentTheme={currentTheme}
+                  />
+                </Reorder.Item>
+              );
+            })}
+          </AnimatePresence>
+        </Reorder.Group>
       </main>
     </div>
   );
